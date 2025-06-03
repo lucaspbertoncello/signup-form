@@ -10,19 +10,24 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 
-const schema = z.object({
-  firstName: z.string().min(2, "First name must have at least 2 characters"),
-  lastName: z.string().min(4, "Last name must have at least 2 characters"),
-  phone: z.number({ invalid_type_error: "Invalid phone number" }),
-  email: z.string().email("Invalid e-mail"),
-  password: z.string().min(4, "Passowrd must have at least 4 characters"),
-  confirmPassword: z.string(),
-});
+const schema = z
+  .object({
+    firstName: z.string().min(2, "First name must have at least 2 characters"),
+    lastName: z.string().min(4, "Last name must have at least 4 characters"),
+    phone: z.number({ invalid_type_error: "Invalid phone number" }),
+    email: z.string().email("Invalid e-mail"),
+    password: z.string().min(4, "Password must have at least 4 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    path: ["confirmPassword"],
+    message: "Passwords do not match",
+  });
 
 type FormData = z.infer<typeof schema>;
 
 export default function SignupForm() {
-  const { handleSubmit, register, reset, formState } = useForm<FormData>({
+  const { handleSubmit, register, reset, watch, formState } = useForm<FormData>({
     mode: "onBlur",
     resolver: zodResolver(schema),
   });
@@ -31,6 +36,9 @@ export default function SignupForm() {
     console.log(data);
     reset();
   });
+
+  const password = watch("password");
+  console.log(password);
 
   return (
     <form className="flex-1">
@@ -65,7 +73,7 @@ export default function SignupForm() {
           <FormGroup error={formState.errors.password?.message}>
             <InputLabel inputType="password" labelText="Password" {...register("password")} />
           </FormGroup>
-          <FormGroup error={formState.errors.password?.message}>
+          <FormGroup error={formState.errors.confirmPassword?.message}>
             <InputLabel inputType="password" labelText="Confirm password" {...register("confirmPassword")} />
           </FormGroup>
         </div>

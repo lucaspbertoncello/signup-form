@@ -41,7 +41,7 @@ export default function SignupForm() {
   console.log(password);
 
   return (
-    <form className="flex-1">
+    <form className="w-full max-w-[800px] px-4 xl:px-0">
       <h1 className="text-2xl text-slate-600 font-semibold">Register</h1>
       <h2 className="text-lg text-slate-600 font-semibold mt-14">Smarter studying starts here</h2>
       <p className="text-md text-slate-400 mb-10">Boost your learning with smart flashcards — sign up for free!</p>

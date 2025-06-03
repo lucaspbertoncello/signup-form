@@ -7,7 +7,7 @@ type FormGroup = {
 
 export default function FormGroup({ children, error }: FormGroup) {
   return (
-    <div className="w-[400px]">
+    <div className="max-w-[500px] w-full">
       {children}
       {error && <span className="text-xs text-red-500">{error}</span>}
     </div>

@@ -1,11 +1,11 @@
 import SidePhoto from "./components/SidePhoto";
+import SignupForm from "./components/SignupForm";
 
 export default function App() {
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="flex items-center gap-x-24 min-h-screen">
       <SidePhoto />
-      {/* <SignupForm /> */}
-      <h1 className="flex-1">oi</h1>
+      <SignupForm />
     </div>
   );
 }

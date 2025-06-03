@@ -1,3 +1,8 @@
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+import { z } from "zod";
+
 import FormGroup from "./FormGroup";
 import { InputLabel } from "./InputLabel";
 
@@ -5,7 +10,28 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "./ui/label";
 import { Button } from "./ui/button";
 
+const schema = z.object({
+  firstName: z.string().min(2, "First name must have at least 2 characters"),
+  lastName: z.string().min(4, "Last name must have at least 2 characters"),
+  phone: z.number({ invalid_type_error: "Invalid phone number" }),
+  email: z.string().email("Invalid e-mail"),
+  password: z.string().min(4, "Passowrd must have at least 4 characters"),
+  confirmPassword: z.string(),
+});
+
+type FormData = z.infer<typeof schema>;
+
 export default function SignupForm() {
+  const { handleSubmit, register, reset, formState } = useForm<FormData>({
+    mode: "onBlur",
+    resolver: zodResolver(schema),
+  });
+
+  const handleSubmitForm = handleSubmit((data) => {
+    console.log(data);
+    reset();
+  });
+
   return (
     <form className="flex-1">
       <h1 className="text-2xl text-slate-600 font-semibold">Register</h1>
@@ -14,29 +40,33 @@ export default function SignupForm() {
 
       <div className="space-y-8 mb-10">
         <div className="flex gap-4">
-          <FormGroup>
-            <InputLabel inputType="text" labelText="First Name" />
+          <FormGroup error={formState.errors.firstName?.message}>
+            <InputLabel inputType="text" labelText="First Name" {...register("firstName")} />
           </FormGroup>
-          <FormGroup>
-            <InputLabel inputType="text" labelText="Last name" />
-          </FormGroup>
-        </div>
-
-        <div className="flex gap-4">
-          <FormGroup>
-            <InputLabel inputType="text" labelText="Phone number" />
-          </FormGroup>
-          <FormGroup>
-            <InputLabel inputType="text" labelText="E-mail" />
+          <FormGroup error={formState.errors.lastName?.message}>
+            <InputLabel inputType="text" labelText="Last name" {...register("lastName")} />
           </FormGroup>
         </div>
 
         <div className="flex gap-4">
-          <FormGroup>
-            <InputLabel inputType="password" labelText="Password" />
+          <FormGroup error={formState.errors.phone?.message}>
+            <InputLabel
+              inputType="text"
+              labelText="Phone number"
+              {...register("phone", { setValueAs: (value) => Number(value) })}
+            />
           </FormGroup>
-          <FormGroup>
-            <InputLabel inputType="password" labelText="Confirm password" />
+          <FormGroup error={formState.errors.email?.message}>
+            <InputLabel inputType="text" labelText="E-mail" {...register("email")} />
+          </FormGroup>
+        </div>
+
+        <div className="flex gap-4">
+          <FormGroup error={formState.errors.password?.message}>
+            <InputLabel inputType="password" labelText="Password" {...register("password")} />
+          </FormGroup>
+          <FormGroup error={formState.errors.password?.message}>
+            <InputLabel inputType="password" labelText="Confirm password" {...register("confirmPassword")} />
           </FormGroup>
         </div>
       </div>
@@ -57,7 +87,9 @@ export default function SignupForm() {
         </div>
       </div>
 
-      <Button>Create account</Button>
+      <Button disabled={!formState.isValid} onClick={handleSubmitForm}>
+        Create account
+      </Button>
     </form>
   );
 }
